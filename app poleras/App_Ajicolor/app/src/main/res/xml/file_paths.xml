@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Ruta para archivos en el cache de la app -->
+    <cache-path name="profile_images" path="profile_images/" />
+    <cache-path name="images" path="images/" />
+    <cache-path name="reviews" path="reviews/" />
+
+    <!-- Ruta para archivos en el almacenamiento interno de la app -->
+    <files-path name="my_images" path="images/" />
+
+    <!-- Ruta para almacenamiento externo si se necesita -->
+    <external-path name="external_files" path="." />
+</paths>
+

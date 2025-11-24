@@ -1,0 +1,257 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "1441fe24afe06aa2a81e1b10fb1e2516",
+    "entities": [
+      {
+        "tableName": "users",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nombre` TEXT NOT NULL, `correo` TEXT NOT NULL, `telefono` TEXT NOT NULL, `clave` TEXT NOT NULL, `direccion` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nombre",
+            "columnName": "nombre",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "correo",
+            "columnName": "correo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "telefono",
+            "columnName": "telefono",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clave",
+            "columnName": "clave",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "direccion",
+            "columnName": "direccion",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "pedidos",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`numeroPedido` TEXT NOT NULL, `nombreUsuario` TEXT NOT NULL, `userId` INTEGER NOT NULL, `subtotal` INTEGER NOT NULL, `impuestos` INTEGER NOT NULL, `costoEnvio` INTEGER NOT NULL, `total` INTEGER NOT NULL, `direccionEnvio` TEXT NOT NULL, `telefono` TEXT NOT NULL, `notasAdicionales` TEXT NOT NULL, `numeroDespacho` TEXT, `metodoPago` TEXT NOT NULL, `estado` TEXT NOT NULL, `fechaCreacion` INTEGER NOT NULL, `fechaConfirmacion` INTEGER, `fechaEnvio` INTEGER, `fechaEntrega` INTEGER, PRIMARY KEY(`numeroPedido`))",
+        "fields": [
+          {
+            "fieldPath": "numeroPedido",
+            "columnName": "numeroPedido",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nombreUsuario",
+            "columnName": "nombreUsuario",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "userId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subtotal",
+            "columnName": "subtotal",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "impuestos",
+            "columnName": "impuestos",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "costoEnvio",
+            "columnName": "costoEnvio",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "total",
+            "columnName": "total",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "direccionEnvio",
+            "columnName": "direccionEnvio",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "telefono",
+            "columnName": "telefono",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notasAdicionales",
+            "columnName": "notasAdicionales",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "numeroDespacho",
+            "columnName": "numeroDespacho",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "metodoPago",
+            "columnName": "metodoPago",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "estado",
+            "columnName": "estado",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fechaCreacion",
+            "columnName": "fechaCreacion",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fechaConfirmacion",
+            "columnName": "fechaConfirmacion",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fechaEnvio",
+            "columnName": "fechaEnvio",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fechaEntrega",
+            "columnName": "fechaEntrega",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "numeroPedido"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "pedido_items",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`numeroPedido` TEXT NOT NULL, `productoId` TEXT NOT NULL, `productoNombre` TEXT NOT NULL, `productoImagenResId` INTEGER NOT NULL, `precio` INTEGER NOT NULL, `cantidad` INTEGER NOT NULL, `talla` TEXT NOT NULL, `color` TEXT NOT NULL, `colorNombre` TEXT NOT NULL, `categoria` TEXT NOT NULL, PRIMARY KEY(`numeroPedido`, `productoId`, `talla`, `color`))",
+        "fields": [
+          {
+            "fieldPath": "numeroPedido",
+            "columnName": "numeroPedido",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productoId",
+            "columnName": "productoId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productoNombre",
+            "columnName": "productoNombre",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productoImagenResId",
+            "columnName": "productoImagenResId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "precio",
+            "columnName": "precio",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cantidad",
+            "columnName": "cantidad",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "talla",
+            "columnName": "talla",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "color",
+            "columnName": "color",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "colorNombre",
+            "columnName": "colorNombre",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoria",
+            "columnName": "categoria",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "numeroPedido",
+            "productoId",
+            "talla",
+            "color"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1441fe24afe06aa2a81e1b10fb1e2516')"
+    ]
+  }
+}

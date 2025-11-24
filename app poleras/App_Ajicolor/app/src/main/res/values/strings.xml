@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">AppAjiColorGrupo4</string>
+    <string name="carrito_titulo">Carrito de Compras</string>
+    <string name="carrito_vacio_desc">Carrito vacío</string>
+    <string name="carrito_vacio_mensaje">Aún no tienes productos en tu carrito</string>
+    <string name="ver_catalogo">Ver Catálogo de Productos</string>
+    <string name="envio_gratis_felicidades">¡Felicidades! Envío Gratis 🎉</string>
+    <string name="compra_supera">Tu compra supera los %s</string>
+    <string name="envio_gratis_sobre">Envío Gratis en compras sobre %s</string>
+    <string name="subtotal">Subtotal:</string>
+    <string name="iva">IVA (19%%):</string>
+    <string name="envio">Envío:</string>
+    <string name="gratis">GRATIS</string>
+    <string name="total">Total:</string>
+    <string name="proceder_pago">Proceder al Pago</string>
+    <string name="imagen_de">Imagen de %s</string>
+    <string name="talla">Talla: %s</string>
+    <string name="color">Color: %s</string>
+    <string name="aumentar_cantidad">Aumentar cantidad</string>
+    <string name="eliminar">Eliminar</string>
+</resources>
