@@ -1,17 +1,19 @@
 const express = require('express');
-const dotenv = require('dotenv');
-const cors = require('cors');
-const helmet = require('helmet');
-const connectDB = require('./config/db');
+const path = require("path");
+const dotenv = require("dotenv");
+const cors = require("cors");
+const helmet = require("helmet");
+const connectDB = require("./config/db");
 
 // Rutas
-const productRoutes = require('./routes/productRoutes');
-const authRoutes = require('./routes/authRoutes');
-const orderRoutes = require('./routes/orderRoutes');
-const postRoutes = require('./routes/postRoutes');
+const productRoutes = require("./routes/productRoutes");
+const authRoutes = require("./routes/authRoutes");
+const orderRoutes = require("./routes/orderRoutes");
+const postRoutes = require("./routes/postRoutes");
 
 dotenv.config();
 
+// Conectar a Base de Datos
 // Conectar a Base de Datos
 connectDB();
 
@@ -21,6 +23,7 @@ const app = express();
 app.use(cors());
 app.use(helmet());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "../public")));
 
 // Rutas
 app.use('/api/v1/productos', productRoutes);
