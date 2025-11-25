@@ -1,110 +1,108 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User');
-const jwt = require('jsonwebtoken');
+const { check } = require("express-validator");
+const { login, register } = require("../controllers/authController");
+const auditLogger = require("../middleware/auditLogger");
 
-// Generar JWT
-const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: '30d',
-    });
-};
+const sendEmail = require("../utils/sendEmail");
+
+// Validation Chains
+const loginValidation = [
+  check("email", "Please include a valid email").isEmail().normalizeEmail(),
+  check("password", "Password is required").exists().isString(),
+];
 
 // @desc    Autenticar usuario y obtener token
 // @route   POST /api/v1/usuarios/login
 // @access  Public
-router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-
-    try {
-        const user = await User.findOne({ email });
-
-        if (user && (await user.matchPassword(password))) {
-            res.json({
-                _id: user._id,
-                nombre: user.nombre,
-                email: user.email,
-                rol: user.rol,
-                token: generateToken(user._id),
-            });
-        } else {
-            res.status(401).json({ message: 'Email o contraseña inválidos' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
+router.post("/login", auditLogger("LOGIN_ATTEMPT"), loginValidation, login);
 
 // @desc    Registrar un nuevo usuario
 // @route   POST /api/v1/usuarios/register
 // @access  Public
-router.post('/register', async (req, res) => {
-    const { nombre, email, password, telefono, direccion } = req.body;
+router.post("/register", async (req, res) => {
+  const { nombre, email, password, telefono, direccion } = req.body;
 
-    try {
-        const userExists = await User.findOne({ email });
+  try {
+    const userExists = await User.findOne({ email });
 
-        if (userExists) {
-            return res.status(400).json({ message: 'El usuario ya existe' });
-        }
-
-        const user = await User.create({
-            nombre,
-            email,
-            password,
-            telefono,
-            direccion
-        });
-
-        if (user) {
-            res.status(201).json({
-                _id: user._id,
-                nombre: user.nombre,
-                email: user.email,
-                rol: user.rol,
-                token: generateToken(user._id),
-            });
-        } else {
-            res.status(400).json({ message: 'Datos de usuario inválidos' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    if (userExists) {
+      return res.status(400).json({ message: "El usuario ya existe" });
     }
+
+    const user = await User.create({
+      nombre,
+      email,
+      password,
+      telefono,
+      direccion,
+    });
+
+    if (user) {
+      res.status(201).json({
+        _id: user._id,
+        nombre: user.nombre,
+        email: user.email,
+        rol: user.rol,
+        token: generateToken(user._id),
+      });
+    } else {
+      res.status(400).json({ message: "Datos de usuario inválidos" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 // @desc    Solicitar código de recuperación de contraseña
 // @route   POST /api/v1/usuarios/recover
 // @access  Public
-router.post('/recover', async (req, res) => {
-    const { email } = req.body;
+router.post("/recover", async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    // Generar código de recuperación de 6 dígitos
+    const recoveryCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Guardar código con expiración de 15 minutos
+    user.resetPasswordToken = recoveryCode;
+    user.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 minutos
+    await user.save();
+
+    // Enviar email
+    const message = `Tu código de recuperación es: ${recoveryCode}\n\nEste código expirará en 15 minutos.`;
 
     try {
-        const user = await User.findOne({ email });
-
-        if (!user) {
-            return res.status(404).json({ message: 'Usuario no encontrado' });
-        }
-
-        // Generar código de recuperación de 6 dígitos
-        const recoveryCode = Math.floor(100000 + Math.random() * 900000).toString();
-        
-        // Guardar código con expiración de 15 minutos
-        user.resetPasswordToken = recoveryCode;
-        user.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 minutos
-        await user.save();
-
-        // En producción, aquí se enviaría un email con el código
-        // Por ahora, lo retornamos en la respuesta para pruebas
-        console.log(`Código de recuperación para ${email}: ${recoveryCode}`);
-
-        res.json({ 
-            message: 'Código de recuperación enviado',
-            // Solo para desarrollo/testing - REMOVER en producción
-            recoveryCode: process.env.NODE_ENV === 'test' ? recoveryCode : undefined
-        });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+      await sendEmail({
+        email: user.email,
+        subject: "Recuperación de contraseña - App Poleras",
+        message,
+      });
+      console.log(`Email enviado a: ${email}`);
+    } catch (emailError) {
+      console.error("Error enviando email:", emailError);
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      await user.save();
+      return res
+        .status(500)
+        .json({ message: "Error enviando el email de recuperación" });
     }
+
+    // En producción, NO retornar el código
+    res.json({
+      message: "Código de recuperación enviado",
+      recoveryCode: process.env.NODE_ENV === "test" ? recoveryCode : undefined,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 // @desc    Resetear contraseña con código de recuperación

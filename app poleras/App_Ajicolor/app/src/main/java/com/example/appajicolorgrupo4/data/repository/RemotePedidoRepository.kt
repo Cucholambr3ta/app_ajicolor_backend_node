@@ -12,10 +12,10 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
 /** Repositorio para gestionar pedidos en el Backend */
-class RemotePedidoRepository(private val apiService: ApiService) {
+class RemotePedidoRepository(private val apiService: ApiService) : PedidoRepository {
 
     /** Guarda un pedido en el backend */
-    suspend fun guardarPedido(pedido: PedidoCompleto, userId: String): Result<String> {
+    override suspend fun guardarPedido(pedido: PedidoCompleto, userId: String): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
                 val orderProducts =
@@ -60,7 +60,7 @@ class RemotePedidoRepository(private val apiService: ApiService) {
     }
 
     /** Obtiene los pedidos del usuario desde el backend */
-    fun obtenerPedidosUsuario(userId: String): Flow<List<PedidoCompleto>> {
+    override fun obtenerPedidosUsuario(userId: String): Flow<List<PedidoCompleto>> {
         return flow<List<PedidoCompleto>> {
                     try {
                         val response = apiService.getOrdersByUser(userId)
@@ -80,7 +80,7 @@ class RemotePedidoRepository(private val apiService: ApiService) {
     }
 
     /** Obtiene TODOS los pedidos (Admin) */
-    fun obtenerTodosLosPedidos(): Flow<List<PedidoCompleto>> {
+    override fun obtenerTodosLosPedidos(): Flow<List<PedidoCompleto>> {
         return flow<List<PedidoCompleto>> {
             try {
                 val response = apiService.getAllOrders()
@@ -143,12 +143,12 @@ class RemotePedidoRepository(private val apiService: ApiService) {
         )
     }
 
-    suspend fun obtenerPedidoPorNumero(numeroPedido: String): PedidoCompleto? {
+    override suspend fun obtenerPedidoPorNumero(numeroPedido: String): PedidoCompleto? {
         // Implementar endpoint GET /api/v1/pedidos/{numeroPedido} si existe
         return null
     }
 
-    suspend fun actualizarEstadoPedido(numeroPedido: String, nuevoEstado: EstadoPedido) {
+    override suspend fun actualizarEstadoPedido(numeroPedido: String, nuevoEstado: EstadoPedido) {
         try {
             val statusMap = mapOf("estado" to nuevoEstado.name)
             val response = apiService.updateOrderStatus(numeroPedido, statusMap)
@@ -160,7 +160,7 @@ class RemotePedidoRepository(private val apiService: ApiService) {
         }
     }
 
-    suspend fun asignarNumeroDespacho(numeroPedido: String, numeroDespacho: String) {
+    override suspend fun asignarNumeroDespacho(numeroPedido: String, numeroDespacho: String) {
         // Implementar endpoint PUT /api/v1/pedidos/{numeroPedido}/despacho
     }
 }

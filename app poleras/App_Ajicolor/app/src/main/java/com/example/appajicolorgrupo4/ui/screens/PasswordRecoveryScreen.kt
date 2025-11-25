@@ -36,46 +36,9 @@ fun PasswordRecoveryScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (state.success) {
-                // Imagen de envío de correo
-                Image(
-                    painter = painterResource(id = R.drawable.envio_correo),
-                    contentDescription = "Correo Enviado",
-                    modifier = Modifier.size(150.dp)
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text(
-                    text = "✓ Código Enviado",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = AmarilloAji
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Hemos enviado un código de recuperación a tu correo electrónico.",
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
-                
-                // Mostrar código solo en modo test (para debugging)
-                state.recoveryCode?.let { code ->
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "Código (solo testing): $code",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
-                }
-                
-                Spacer(modifier = Modifier.height(32.dp))
-                Button(
-                    onClick = { 
-                        viewModel.resetState()
-                        navController.popBackStack() 
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Volver al Inicio de Sesión")
+                // Navegar a la pantalla de reset password
+                LaunchedEffect(Unit) {
+                    navController.navigate(com.example.appajicolorgrupo4.navigation.Screen.ResetPassword.createRoute(email))
                 }
             } else {
                 // Imagen de recuperación

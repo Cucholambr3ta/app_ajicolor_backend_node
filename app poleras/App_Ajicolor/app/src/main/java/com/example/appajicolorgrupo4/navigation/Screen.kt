@@ -55,8 +55,14 @@ sealed class Screen(val route: String) {
         }
     }
 
-    // Ejemplo antiguo (mantener por compatibilidad)
     data class Detail(val itemId: String) : Screen(route = "detail_page/{itemId}") {
         fun buildRoute(): String = route.replace("{itemId}", itemId)
+    }
+
+    data class ResetPassword(val email: String) : Screen(route = "reset_password/{email}") {
+        companion object {
+            const val routePattern = "reset_password/{email}"
+            fun createRoute(email: String) = "reset_password/$email"
+        }
     }
 }

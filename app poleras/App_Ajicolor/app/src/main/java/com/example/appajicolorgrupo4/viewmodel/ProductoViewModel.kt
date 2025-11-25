@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.appajicolorgrupo4.data.Producto
 import com.example.appajicolorgrupo4.data.ProductoResena
 import com.example.appajicolorgrupo4.data.remote.RetrofitInstance
+import com.example.appajicolorgrupo4.data.repository.ProductoRepository
 import com.example.appajicolorgrupo4.data.repository.RemoteProductoRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,9 +15,9 @@ import kotlinx.coroutines.launch
 /**
  * ViewModel para gestionar productos y sus reseñas
  */
-class ProductoViewModel : ViewModel() {
-
-    private val repository = RemoteProductoRepository(RetrofitInstance.api)
+class ProductoViewModel(
+    private val repository: ProductoRepository = RemoteProductoRepository(RetrofitInstance.api)
+) : ViewModel() {
 
     private val _productos = MutableStateFlow<List<Producto>>(emptyList())
     val productos: StateFlow<List<Producto>> = _productos.asStateFlow()
@@ -91,12 +92,15 @@ class ProductoViewModel : ViewModel() {
     /**
      * Elimina un producto
      */
+    /**
+     * Elimina un producto
+     */
     fun eliminarProducto(id: String) {
         viewModelScope.launch {
             _isLoading.value = true
             val result = repository.eliminarProducto(id)
             result.onSuccess {
-                val currentList = _productos.value.filter { it.id != id }
+                val currentList = _productos.value.filter { producto -> producto.id != id }
                 _productos.value = currentList
             }.onFailure { e ->
                 _error.value = "Error eliminando producto: ${e.message}"
@@ -116,7 +120,7 @@ class ProductoViewModel : ViewModel() {
      * Obtiene un producto por su ID
      */
     fun obtenerProducto(id: String): Producto? {
-        return _productos.value.find { it.id == id }
+        return _productos.value.find { producto -> producto.id == id }
     }
 
     /**
@@ -130,8 +134,8 @@ class ProductoViewModel : ViewModel() {
      * Agrega una nueva reseña a un producto
      */
     fun agregarResena(resena: ProductoResena) {
-        val resenasActuales = _resenas.value.toMutableMap()
-        val resenasProducto = resenasActuales[resena.productoId]?.toMutableList() ?: mutableListOf()
+        val resenasActuales: MutableMap<String, List<ProductoResena>> = _resenas.value.toMutableMap()
+        val resenasProducto: MutableList<ProductoResena> = resenasActuales[resena.productoId]?.toMutableList() ?: mutableListOf()
         resenasProducto.add(0, resena) // Agregar al inicio
         resenasActuales[resena.productoId] = resenasProducto
         _resenas.value = resenasActuales

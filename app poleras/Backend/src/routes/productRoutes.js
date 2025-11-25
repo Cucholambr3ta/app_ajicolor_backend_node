@@ -3,29 +3,7 @@ const router = express.Router();
 const Product = require('../models/Product');
 const jwt = require("jsonwebtoken");
 
-// Middleware para proteger rutas (Admin)
-const protect = async (req, res, next) => {
-  let token;
-
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    try {
-      token = req.headers.authorization.split(" ")[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || "secret");
-      req.user = decoded;
-      return next();
-    } catch (error) {
-      console.error(error);
-      return res.status(401).json({ message: "Not authorized, token failed" });
-    }
-  }
-
-  if (!token) {
-    return res.status(401).json({ message: "Not authorized, no token" });
-  }
-};
+const { protect, admin } = require("../middleware/authMiddleware");
 
 // @desc    Obtener todos los productos
 // @route   GET /api/v1/productos
@@ -65,7 +43,7 @@ router.get("/:id", async (req, res) => {
 // @desc    Crear un nuevo producto
 // @route   POST /api/v1/productos
 // @access  Private (Admin)
-router.post("/", protect, async (req, res) => {
+router.post("/", protect, admin, async (req, res) => {
   const {
     id,
     nombre,
@@ -100,7 +78,7 @@ router.post("/", protect, async (req, res) => {
 // @desc    Actualizar un producto
 // @route   PUT /api/v1/productos/:id
 // @access  Private (Admin)
-router.put("/:id", protect, async (req, res) => {
+router.put("/:id", protect, admin, async (req, res) => {
   try {
     let product;
 
@@ -137,7 +115,7 @@ router.put("/:id", protect, async (req, res) => {
 // @desc    Eliminar un producto
 // @route   DELETE /api/v1/productos/:id
 // @access  Private (Admin)
-router.delete("/:id", protect, async (req, res) => {
+router.delete("/:id", protect, admin, async (req, res) => {
   try {
     let product;
 

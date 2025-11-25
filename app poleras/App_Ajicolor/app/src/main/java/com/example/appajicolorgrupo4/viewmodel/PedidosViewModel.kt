@@ -16,14 +16,15 @@ import com.example.appajicolorgrupo4.data.repository.RemotePedidoRepository
  * ViewModel para gestionar los pedidos del usuario
  * Ahora con integración al Backend
  */
-class PedidosViewModel(application: Application) : AndroidViewModel(application) {
+import com.example.appajicolorgrupo4.data.repository.PedidoRepository
 
-    // Repositorio para acceder al backend
-    private val pedidoRepository: RemotePedidoRepository
+class PedidosViewModel(
+    application: Application,
+    private val pedidoRepository: PedidoRepository = RemotePedidoRepository(RetrofitInstance.api)
+) : AndroidViewModel(application) {
 
     init {
-        // Inicializamos el repositorio remoto con la instancia de API
-        pedidoRepository = RemotePedidoRepository(RetrofitInstance.api)
+        // Repository is injected or defaulted
     }
 
     private val _pedidos = MutableStateFlow<List<PedidoCompleto>>(emptyList())

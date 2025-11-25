@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 
 jest.mock("../src/config/db", () => jest.fn());
+jest.mock("../src/utils/sendEmail", () => jest.fn());
 
 const app = require("../src/index");
 const User = require("../src/models/User");

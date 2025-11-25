@@ -1,0 +1,75 @@
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:kspDebugKotlin UP-TO-DATE
+> Task :app:compileDebugKotlin UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :app:bundleDebugClassesToRuntimeJar UP-TO-DATE
+> Task :app:bundleDebugClassesToCompileJar UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :app:processDebugJavaRes UP-TO-DATE
+> Task :app:kspDebugUnitTestKotlin
+> Task :app:compileDebugUnitTestKotlin
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes UP-TO-DATE
+
+> Task :app:testDebugUnitTest
+
+ApiServiceTest > testLogin with valid credentials returns UserEntity FAILED
+    java.lang.AssertionError at ApiServiceTest.kt:38
+
+ApiServiceTest > testGetPosts returns list of posts FAILED
+    java.lang.AssertionError at ApiServiceTest.kt:272
+
+ApiServiceTest > testRegister with valid data returns UserEntity FAILED
+    java.lang.AssertionError at ApiServiceTest.kt:110
+
+CarritoViewModelTest > agregarProducto increments quantity if product exists FAILED
+    java.lang.AssertionError at CarritoViewModelTest.kt:80
+
+CarritoViewModelTest > actualizarCantidad updates quantity FAILED
+    java.lang.AssertionError at CarritoViewModelTest.kt:129
+
+CarritoViewModelTest > calculations are correct FAILED
+    java.lang.AssertionError at CarritoViewModelTest.kt:199
+
+CarritoViewModelTest > agregarProducto adds product to list FAILED
+    java.lang.AssertionError at CarritoViewModelTest.kt:37
+
+Java HotSpot(TM) 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+
+> Task :app:testDebugUnitTest
+
+31 tests completed, 7 failed
+
+> Task :app:testDebugUnitTest FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:testDebugUnitTest'.
+> There were failing tests. See the report at: file:///C:/Users/place/StudioProjects/app_ajicolor_backend_node/app%20poleras/App_Ajicolor/app/build/reports/tests/testDebugUnitTest/index.html
+
+* Try:
+> Run with --scan to get full insights.
+
+BUILD FAILED in 12s
+28 actionable tasks: 3 executed, 25 up-to-date

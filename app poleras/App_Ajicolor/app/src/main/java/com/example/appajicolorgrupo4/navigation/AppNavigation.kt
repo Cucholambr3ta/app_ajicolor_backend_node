@@ -58,6 +58,20 @@ fun AppNavigation() {
         composable(Screen.Registro.route) { RegistroScreen(navController, mainViewModel, usuarioViewModel) }
         composable(Screen.PasswordRecovery.route) { PasswordRecoveryScreen(navController) }
 
+        composable(
+            route = Screen.ResetPassword.routePattern,
+            arguments = listOf(navArgument("email") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
+            if (email != null) {
+                // Use the same ViewModel instance if possible, or create a new one. 
+                // Since we are navigating, a new one is fine, or we could scope it to a parent graph.
+                // For simplicity, we create a new one here as the state is reset anyway.
+                val passwordRecoveryViewModel: PasswordRecoveryViewModel = viewModel()
+                ResetPasswordScreen(navController, passwordRecoveryViewModel, email)
+            }
+        }
+
         // Principal
         composable(Screen.Home.route) {
             HomeScreen(

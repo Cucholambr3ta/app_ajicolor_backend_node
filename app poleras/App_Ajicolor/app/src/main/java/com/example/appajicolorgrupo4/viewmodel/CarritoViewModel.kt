@@ -46,6 +46,7 @@ class CarritoViewModel : ViewModel() {
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
     fun agregarProducto(producto: ProductoCarrito) {
+        println("DEBUG_VM: Adding product ${producto.nombre}")
         val productosActuales = _productos.value.toMutableList()
         val productoExistente = productosActuales.find {
             it.id == producto.id && it.talla == producto.talla && it.color.nombre == producto.color.nombre
@@ -60,6 +61,7 @@ class CarritoViewModel : ViewModel() {
             productosActuales.add(producto)
         }
         _productos.value = productosActuales
+        println("DEBUG_VM: New list size: ${productosActuales.size}")
     }
 
     fun eliminarProducto(producto: ProductoCarrito) {

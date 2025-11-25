@@ -63,7 +63,7 @@ class ApiServiceTest {
         // Then
         assertTrue(response.isSuccessful)
         assertNotNull(response.body())
-        assertEquals(1, response.body()?.id)
+        assertEquals(1L, response.body()?.id)
         assertEquals("Test User", response.body()?.nombre)
         assertEquals("test@example.com", response.body()?.correo)
     }
@@ -142,7 +142,7 @@ class ApiServiceTest {
         assertTrue(response.isSuccessful)
         assertEquals(201, response.code())
         assertNotNull(response.body())
-        assertEquals(2, response.body()?.id)
+        assertEquals(2L, response.body()?.id)
         assertEquals("New User", response.body()?.nombre)
     }
 
@@ -241,13 +241,13 @@ class ApiServiceTest {
         )
 
         // When
-val response = apiService.getProductoById("1")
+        val response = apiService.getProductoById("1")
 
 
         // Then
         assertTrue(response.isSuccessful)
         assertNotNull(response.body())
-assertEquals("1", response.body()?.id)
+        assertEquals("1", response.body()?.id)
 
         assertEquals("Polera Test", response.body()?.nombre)
     }
@@ -261,49 +261,50 @@ assertEquals("1", response.body()?.id)
         )
 
         // When
-val response = apiService.getProductoById("999")
+        val response = apiService.getProductoById("999")
 
 
         // Then
         assertFalse(response.isSuccessful)
         assertEquals(404, response.code())
     }
-@Test
-fun `testGetPosts returns list of posts`() = runTest {
-    // Given
-    val responseJson =
+
+    @Test
+    fun `testGetPosts returns list of posts`() = runTest {
+        // Given
+        val responseJson =
             """
             [
                 {
-                    "_id": "101",
-                    "titulo": "Post Test",
-                    "contenido": "Contenido Test",
-                    "fechaCreacion": "2023-01-01T00:00:00.000Z"
+                    "userId": 1,
+                    "id": 101,
+                    "title": "Post Test",
+                    "body": "Contenido Test"
                 }
             ]
         """.trimIndent()
 
-    mockWebServer.enqueue(
+        mockWebServer.enqueue(
             MockResponse()
-                    .setResponseCode(200)
-                    .setBody(responseJson)
-                    .addHeader("Content-Type", "application/json")
-    )
+                .setResponseCode(200)
+                .setBody(responseJson)
+                .addHeader("Content-Type", "application/json")
+        )
 
-    // When
-    val response = apiService.getPosts()
+        // When
+        val response = apiService.getPosts()
 
-    // Then
-    assertTrue(response.isSuccessful)
-    assertNotNull(response.body())
-    assertEquals(1, response.body()?.size)
-    assertEquals("Post Test", response.body()?.first()?.title)
-}
+        // Then
+        assertTrue(response.isSuccessful)
+        assertNotNull(response.body())
+        assertEquals(1, response.body()?.size)
+        assertEquals("Post Test", response.body()?.first()?.title)
+    }
 
-@Test
-fun `testCreateOrder returns created order`() = runTest {
-    // Given
-    val responseJson =
+    @Test
+    fun `testCreateOrder returns created order`() = runTest {
+        // Given
+        val responseJson =
             """
             {
                 "_id": "order123",
@@ -321,40 +322,40 @@ fun `testCreateOrder returns created order`() = runTest {
             }
         """.trimIndent()
 
-    mockWebServer.enqueue(
+        mockWebServer.enqueue(
             MockResponse()
-                    .setResponseCode(201)
-                    .setBody(responseJson)
-                    .addHeader("Content-Type", "application/json")
-    )
+                .setResponseCode(201)
+                .setBody(responseJson)
+                .addHeader("Content-Type", "application/json")
+        )
 
-    val order =
+        val order =
             com.example.appajicolorgrupo4.data.models.Order(
-                    numeroPedido = "ORD-001",
-                    usuario = "user123",
-                    productos = emptyList(),
-                    subtotal = 1000,
-                    impuestos = 0,
-                    costoEnvio = 0,
-                    total = 1000,
-                    direccionEnvio = "Test Address",
-                    telefono = "123456789",
-                    metodoPago = "EFECTIVO"
+                numeroPedido = "ORD-001",
+                usuario = "user123",
+                productos = emptyList(),
+                subtotal = 1000,
+                impuestos = 0,
+                costoEnvio = 0,
+                total = 1000,
+                direccionEnvio = "Test Address",
+                telefono = "123456789",
+                metodoPago = "EFECTIVO"
             )
 
-    // When
-    val response = apiService.createOrder(order)
+        // When
+        val response = apiService.createOrder(order)
 
-    // Then
-    assertTrue(response.isSuccessful)
-    assertNotNull(response.body())
-    assertEquals("ORD-001", response.body()?.numeroPedido)
-}
+        // Then
+        assertTrue(response.isSuccessful)
+        assertNotNull(response.body())
+        assertEquals("ORD-001", response.body()?.numeroPedido)
+    }
 
-@Test
-fun `testGetOrdersByUser returns list of orders`() = runTest {
-    // Given
-    val responseJson =
+    @Test
+    fun `testGetOrdersByUser returns list of orders`() = runTest {
+        // Given
+        val responseJson =
             """
             [
                 {
@@ -374,21 +375,20 @@ fun `testGetOrdersByUser returns list of orders`() = runTest {
             ]
         """.trimIndent()
 
-    mockWebServer.enqueue(
+        mockWebServer.enqueue(
             MockResponse()
-                    .setResponseCode(200)
-                    .setBody(responseJson)
-                    .addHeader("Content-Type", "application/json")
-    )
+                .setResponseCode(200)
+                .setBody(responseJson)
+                .addHeader("Content-Type", "application/json")
+        )
 
-    // When
-    val response = apiService.getOrdersByUser("user123")
+        // When
+        val response = apiService.getOrdersByUser("user123")
 
-    // Then
-    assertTrue(response.isSuccessful)
-    assertNotNull(response.body())
-    assertEquals(1, response.body()?.size)
-    assertEquals("ORD-001", response.body()?.first()?.numeroPedido)
-}
-
+        // Then
+        assertTrue(response.isSuccessful)
+        assertNotNull(response.body())
+        assertEquals(1, response.body()?.size)
+        assertEquals("ORD-001", response.body()?.first()?.numeroPedido)
+    }
 }

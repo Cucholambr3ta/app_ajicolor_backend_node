@@ -9,6 +9,7 @@ import com.example.appajicolorgrupo4.data.repository.UserRepository
 import com.example.appajicolorgrupo4.data.session.SessionManager
 import com.example.appajicolorgrupo4.data.local.user.UserEntity
 import com.example.appajicolorgrupo4.data.repository.PedidoRepository
+import com.example.appajicolorgrupo4.data.repository.LocalPedidoRepository
 import com.example.appajicolorgrupo4.ui.state.UsuarioUiState
 import com.example.appajicolorgrupo4.ui.state.UsuarioErrores
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,7 @@ import kotlinx.coroutines.launch
 class UsuarioViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: UserRepository
-    private val pedidoRepository: PedidoRepository
+    private val pedidoRepository: LocalPedidoRepository
     private val sessionManager: SessionManager
 
     private val _estado = MutableStateFlow(UsuarioUiState())
@@ -44,7 +45,7 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
     init {
         val database = AppDatabase.getInstance(application)
         repository = UserRepository(database.userDao())
-        pedidoRepository = PedidoRepository(database.pedidoDao())
+        pedidoRepository = LocalPedidoRepository(database.pedidoDao())
         sessionManager = SessionManager(application)
         cargarPerfil()
     }

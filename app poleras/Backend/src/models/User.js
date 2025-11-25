@@ -45,11 +45,17 @@ const userSchema = new mongoose.Schema(
 
 // Encriptar password antes de guardar
 userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) {
-        next();
+    if (!this.isModified("password")) {
+      return next();
     }
-    const salt = await bcrypt.genSalt(10);
+    // Use work factor 1 in test environment for speed, otherwise use config value
+    const rounds =
+      process.env.NODE_ENV === "test"
+        ? 1
+        : parseInt(process.env.BCRYPT_ROUNDS || "10");
+    const salt = await bcrypt.genSalt(rounds);
     this.password = await bcrypt.hash(this.password, salt);
+    next();
 });
 
 // Método para comparar passwords

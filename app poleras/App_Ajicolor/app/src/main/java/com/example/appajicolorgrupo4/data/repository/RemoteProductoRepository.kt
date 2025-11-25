@@ -6,9 +6,9 @@ import com.example.appajicolorgrupo4.data.remote.ApiService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class RemoteProductoRepository(private val apiService: ApiService) {
+class RemoteProductoRepository(private val apiService: ApiService) : ProductoRepository {
 
-    suspend fun obtenerProductos(): Result<List<Producto>> {
+    override suspend fun obtenerProductos(): Result<List<Producto>> {
         return withContext(Dispatchers.IO) {
             try {
                 val response = apiService.getProductos()
@@ -25,7 +25,7 @@ class RemoteProductoRepository(private val apiService: ApiService) {
         }
     }
 
-    suspend fun crearProducto(producto: Producto): Result<Producto> {
+    override suspend fun crearProducto(producto: Producto): Result<Producto> {
         return withContext(Dispatchers.IO) {
             try {
                 val productDto = producto.toDto()
@@ -42,7 +42,7 @@ class RemoteProductoRepository(private val apiService: ApiService) {
         }
     }
 
-    suspend fun actualizarProducto(producto: Producto): Result<Producto> {
+    override suspend fun actualizarProducto(producto: Producto): Result<Producto> {
         return withContext(Dispatchers.IO) {
             try {
                 val productDto = producto.toDto()
@@ -59,7 +59,7 @@ class RemoteProductoRepository(private val apiService: ApiService) {
         }
     }
 
-    suspend fun eliminarProducto(id: String): Result<Unit> {
+    override suspend fun eliminarProducto(id: String): Result<Unit> {
         return withContext(Dispatchers.IO) {
             try {
                 val response = apiService.deleteProduct(id)
