@@ -1,81 +1,96 @@
 const mongoose = require('mongoose');
 
-const orderSchema = new mongoose.Schema({
+const orderSchema = new mongoose.Schema(
+  {
     numeroPedido: {
-        type: String,
-        required: true,
-        unique: true
+      type: String,
+      required: true,
+      unique: true,
     },
     usuario: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
-    productos: [{
+    productos: [
+      {
         producto: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Product',
-            required: true
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
         },
         cantidad: {
-            type: Number,
-            required: true,
-            default: 1
+          type: Number,
+          required: true,
+          default: 1,
         },
         talla: {
-            type: String,
-            required: false
+          type: String,
+          required: false,
         },
         color: {
-            type: String,
-            required: false
+          type: String,
+          required: false,
         },
         precioUnitario: {
-            type: Number,
-            required: true
-        }
-    }],
+          type: mongoose.Types.Decimal128,
+          required: true,
+          get: (value) => (value ? parseFloat(value.toString()) : 0),
+        },
+      },
+    ],
     subtotal: {
-        type: Number,
-        required: true
+      type: mongoose.Types.Decimal128,
+      required: true,
+      get: (value) => (value ? parseFloat(value.toString()) : 0),
     },
     impuestos: {
-        type: Number,
-        required: true,
-        default: 0
+      type: mongoose.Types.Decimal128,
+      required: true,
+      default: 0,
+      get: (value) => (value ? parseFloat(value.toString()) : 0),
     },
     costoEnvio: {
-        type: Number,
-        required: true,
-        default: 0
+      type: mongoose.Types.Decimal128,
+      required: true,
+      default: 0,
+      get: (value) => (value ? parseFloat(value.toString()) : 0),
     },
     total: {
-        type: Number,
-        required: true
+      type: mongoose.Types.Decimal128,
+      required: true,
+      get: (value) => (value ? parseFloat(value.toString()) : 0),
     },
     direccionEnvio: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     telefono: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     estado: {
-        type: String,
-        enum: ['CONFIRMADO', 'PREPARANDO', 'ENVIADO', 'ENTREGADO'],
-        default: 'CONFIRMADO'
+      type: String,
+      enum: ["CONFIRMADO", "PREPARANDO", "ENVIADO", "ENTREGADO"],
+      default: "CONFIRMADO",
     },
     metodoPago: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     fechaConfirmacion: Date,
     fechaEnvio: Date,
-    fechaEntrega: Date
-}, {
-    timestamps: true
-});
+    fechaEntrega: Date,
+  },
+  {
+    timestamps: true,
+    toJSON: { getters: true },
+  }
+);
+
+// Indexes for performance
+orderSchema.index({ usuario: 1, estado: 1 });
+orderSchema.index({ numeroPedido: 1 });
 
 const Order = mongoose.model('Order', orderSchema);
 

@@ -43,6 +43,9 @@ const userSchema = new mongoose.Schema(
   }
 );
 
+// Index for faster email queries (login, registration checks)
+userSchema.index({ email: 1 });
+
 // Encriptar password antes de guardar
 userSchema.pre('save', async function (next) {
     if (!this.isModified("password")) {
@@ -61,6 +64,26 @@ userSchema.pre('save', async function (next) {
 // Método para comparar passwords
 userSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
+};
+
+// Método para generar y hashear token de reseteo de contraseña
+userSchema.methods.getResetPasswordToken = function () {
+    const crypto = require('crypto');
+    
+    // Generar token aleatorio
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    
+    // Hashear el token antes de guardarlo en la DB (SEGURIDAD)
+    this.resetPasswordToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+    
+    // Expiración: 10 minutos
+    this.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
+    
+    // Retornar el token SIN hashear (este se envía por email)
+    return resetToken;
 };
 
 const User = mongoose.model('User', userSchema);

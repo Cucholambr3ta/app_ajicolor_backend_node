@@ -3,12 +3,14 @@ const path = require("path");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const configureSecurity = require("./middleware/security");
+const errorHandler = require("./middleware/errorHandler");
 
 // Rutas
 const productRoutes = require("./routes/productRoutes");
 const authRoutes = require("./routes/authRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const postRoutes = require("./routes/postRoutes");
+const healthRoutes = require("./routes/healthRoutes");
 
 dotenv.config();
 
@@ -27,6 +29,7 @@ app.use(express.static(path.join(__dirname, "../public")));
 configureSecurity(app);
 
 // Rutas
+app.use("/api/health", healthRoutes);
 app.use("/api/v1/productos", productRoutes);
 app.use("/api/v1/usuarios", authRoutes);
 app.use("/api/v1/pedidos", orderRoutes);
@@ -37,8 +40,8 @@ app.get("/", (req, res) => {
   res.send("API de App Poleras funcionando...");
 });
 
-// Health Check
-app.get("/health", (req, res) => res.status(200).json({ status: "OK" }));
+// Global Error Handler (MUST be last middleware)
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 
