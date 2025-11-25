@@ -1,16 +1,22 @@
 package com.example.appajicolorgrupo4.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.appajicolorgrupo4.data.Producto
 import com.example.appajicolorgrupo4.data.ProductoResena
+import com.example.appajicolorgrupo4.data.remote.RetrofitInstance
+import com.example.appajicolorgrupo4.data.repository.RemoteProductoRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 /**
  * ViewModel para gestionar productos y sus reseñas
  */
 class ProductoViewModel : ViewModel() {
+
+    private val repository = RemoteProductoRepository(RetrofitInstance.api)
 
     private val _productos = MutableStateFlow<List<Producto>>(emptyList())
     val productos: StateFlow<List<Producto>> = _productos.asStateFlow()
@@ -18,8 +24,89 @@ class ProductoViewModel : ViewModel() {
     private val _resenas = MutableStateFlow<Map<String, List<ProductoResena>>>(emptyMap())
     val resenas: StateFlow<Map<String, List<ProductoResena>>> = _resenas.asStateFlow()
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error.asStateFlow()
+
+    init {
+        cargarProductosRemotos()
+    }
+
     /**
-     * Carga los productos (en producción vendría de una API o BD)
+     * Carga los productos desde el backend
+     */
+    fun cargarProductosRemotos() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+            val result = repository.obtenerProductos()
+            result.onSuccess { lista ->
+                _productos.value = lista
+            }.onFailure { e ->
+                _error.value = e.message
+            }
+            _isLoading.value = false
+        }
+    }
+
+    /**
+     * Crea un nuevo producto
+     */
+    fun crearProducto(producto: Producto) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            val result = repository.crearProducto(producto)
+            result.onSuccess { created ->
+                val currentList = _productos.value.toMutableList()
+                currentList.add(created)
+                _productos.value = currentList
+            }.onFailure { e ->
+                _error.value = "Error creando producto: ${e.message}"
+            }
+            _isLoading.value = false
+        }
+    }
+
+    /**
+     * Actualiza un producto existente
+     */
+    fun actualizarProducto(producto: Producto) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            val result = repository.actualizarProducto(producto)
+            result.onSuccess { updated ->
+                val currentList = _productos.value.map { 
+                    if (it.id == updated.id) updated else it 
+                }
+                _productos.value = currentList
+            }.onFailure { e ->
+                _error.value = "Error actualizando producto: ${e.message}"
+            }
+            _isLoading.value = false
+        }
+    }
+
+    /**
+     * Elimina un producto
+     */
+    fun eliminarProducto(id: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            val result = repository.eliminarProducto(id)
+            result.onSuccess {
+                val currentList = _productos.value.filter { it.id != id }
+                _productos.value = currentList
+            }.onFailure { e ->
+                _error.value = "Error eliminando producto: ${e.message}"
+            }
+            _isLoading.value = false
+        }
+    }
+
+    /**
+     * Carga los productos (Legacy/Local)
      */
     fun cargarProductos(listaProductos: List<Producto>) {
         _productos.value = listaProductos

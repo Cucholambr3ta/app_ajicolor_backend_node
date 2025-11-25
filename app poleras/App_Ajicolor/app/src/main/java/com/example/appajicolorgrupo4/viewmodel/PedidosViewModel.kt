@@ -64,6 +64,13 @@ class PedidosViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+/** Carga TODOS los pedidos (Admin) */
+fun cargarTodosLosPedidos() {
+    viewModelScope.launch {
+        pedidoRepository.obtenerTodosLosPedidos().collect { pedidos -> _pedidos.value = pedidos }
+    }
+}
+
     /**
      * Obtiene un pedido por su número desde SQLite.
      */

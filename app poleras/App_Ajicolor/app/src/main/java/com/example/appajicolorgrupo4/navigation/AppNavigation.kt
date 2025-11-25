@@ -20,7 +20,7 @@ fun AppNavigation() {
     val productoViewModel: ProductoViewModel = viewModel()
     val pedidosViewModel: PedidosViewModel = viewModel()
     val notificacionesViewModel: NotificacionesViewModel = viewModel()
-val postViewModel: PostViewModel = viewModel()
+    // PostViewModel removed as it is no longer used in PostScreen (Admin)
 
 
     // Observar eventos de navegación del MainViewModel
@@ -111,14 +111,15 @@ composable(Screen.Settings.route) { SettingScreen(navController, mainViewModel) 
 composable(Screen.Catalogo.route) { CatalogoProductosScreen(navController) }
 
 
+
         // Pedidos
         composable(Screen.OrderHistory.route) { OrderHistoryScreen(navController) }
 
         // Depuración
         composable(Screen.Debug.route) { DebugScreen(navController, usuarioViewModel) }
 
-        // Admin
-composable(Screen.Posts.route) { PostScreen(postViewModel) }
+// Admin (PostScreen refactored)
+composable(Screen.Posts.route) { PostScreen(productoViewModel, pedidosViewModel) }
 
 
         // Arguments

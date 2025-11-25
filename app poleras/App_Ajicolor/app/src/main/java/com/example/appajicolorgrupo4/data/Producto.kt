@@ -10,6 +10,7 @@ data class Producto(
     val precio: Int, // Cambiado a Int para evitar decimales
     val categoria: CategoriaProducto,
     val imagenResId: Int, // Resource ID de la imagen
+    val imagenUrl: String? = null, // URL de la imagen (para backend)
     val tallasDisponibles: List<Talla> = emptyList(),
     val coloresDisponibles: List<ColorInfo> = emptyList(),
     val tipoProducto: TipoProducto? = null, // Solo para DTF

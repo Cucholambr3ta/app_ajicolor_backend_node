@@ -96,4 +96,37 @@ router.get('/usuario/:userId', protect, async (req, res) => {
     }
 });
 
+// @desc    Obtener todos los pedidos (Admin)
+// @route   GET /api/v1/pedidos
+// @access  Private (Admin)
+router.get('/', protect, async (req, res) => {
+    try {
+        const orders = await Order.find({}).sort({ createdAt: -1 });
+        res.json(orders);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// @desc    Actualizar estado del pedido
+// @route   PUT /api/v1/pedidos/:numeroPedido/estado
+// @access  Private (Admin)
+router.put('/:numeroPedido/estado', protect, async (req, res) => {
+    const { estado } = req.body;
+
+    try {
+        const order = await Order.findOne({ numeroPedido: req.params.numeroPedido });
+
+        if (order) {
+            order.estado = estado;
+            const updatedOrder = await order.save();
+            res.json(updatedOrder);
+        } else {
+            res.status(404).json({ message: 'Pedido no encontrado' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;

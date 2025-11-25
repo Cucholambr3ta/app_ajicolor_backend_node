@@ -79,6 +79,24 @@ class RemotePedidoRepository(private val apiService: ApiService) {
                 .flowOn(Dispatchers.IO)
     }
 
+    /** Obtiene TODOS los pedidos (Admin) */
+    fun obtenerTodosLosPedidos(): Flow<List<PedidoCompleto>> {
+        return flow<List<PedidoCompleto>> {
+            try {
+                val response = apiService.getAllOrders()
+                if (response.isSuccessful) {
+                    val orders: List<Order> = response.body() ?: emptyList()
+                    val pedidosCompletos = orders.map { order: Order -> convertirAPedidoCompleto(order) }
+                    emit(pedidosCompletos)
+                } else {
+                    emit(emptyList<PedidoCompleto>())
+                }
+            } catch (e: Exception) {
+                emit(emptyList<PedidoCompleto>())
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
     private fun convertirAPedidoCompleto(order: Order): PedidoCompleto {
         // Nota: El backend no devuelve todos los detalles del producto (nombre, imagen, etc.)
         // en la lista de pedidos, solo IDs. Idealmente el backend debería hacer 'populate'.
@@ -131,7 +149,15 @@ class RemotePedidoRepository(private val apiService: ApiService) {
     }
 
     suspend fun actualizarEstadoPedido(numeroPedido: String, nuevoEstado: EstadoPedido) {
-        // Implementar endpoint PUT /api/v1/pedidos/{numeroPedido}/estado
+        try {
+            val statusMap = mapOf("estado" to nuevoEstado.name)
+            val response = apiService.updateOrderStatus(numeroPedido, statusMap)
+            if (!response.isSuccessful) {
+                android.util.Log.e("RemotePedidoRepository", "Error updating status: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("RemotePedidoRepository", "Exception updating status", e)
+        }
     }
 
     suspend fun asignarNumeroDespacho(numeroPedido: String, numeroDespacho: String) {
