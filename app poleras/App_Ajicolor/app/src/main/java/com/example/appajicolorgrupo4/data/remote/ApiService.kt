@@ -62,6 +62,14 @@ interface ApiService {
 
     @PUT("api/v1/pedidos/{id}/estado")
     suspend fun updateOrderStatus(@Path("id") id: String, @Body status: Map<String, String>): Response<com.example.appajicolorgrupo4.data.models.Order>
+
+    // ==================== PASSWORD RECOVERY ====================
+
+    @POST("api/v1/usuarios/recover")
+    suspend fun recoverPassword(@Body request: Map<String, String>): Response<Map<String, String>>
+
+    @POST("api/v1/usuarios/reset-password")
+    suspend fun resetPassword(@Body request: Map<String, String>): Response<Map<String, String>>
 }
 
 // DTOs para login/register

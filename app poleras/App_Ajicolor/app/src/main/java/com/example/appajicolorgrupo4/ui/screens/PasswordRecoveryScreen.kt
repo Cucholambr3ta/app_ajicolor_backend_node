@@ -10,19 +10,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.appajicolorgrupo4.R
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
 import com.example.appajicolorgrupo4.ui.theme.MoradoAji
+import com.example.appajicolorgrupo4.viewmodel.PasswordRecoveryViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PasswordRecoveryScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: PasswordRecoveryViewModel = viewModel()
 ) {
     var email by remember { mutableStateOf("") }
-    var showSuccess by remember { mutableStateOf(false) }
+    val state by viewModel.state.collectAsState()
 
     AppBackground {
         Column(
@@ -32,7 +35,7 @@ fun PasswordRecoveryScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (showSuccess) {
+            if (state.success) {
                 // Imagen de envío de correo
                 Image(
                     painter = painterResource(id = R.drawable.envio_correo),
@@ -43,19 +46,33 @@ fun PasswordRecoveryScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
-                    text = "✓ Correo Enviado",
+                    text = "✓ Código Enviado",
                     style = MaterialTheme.typography.headlineMedium,
                     color = AmarilloAji
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Revisa tu correo electrónico para restablecer tu contraseña.",
+                    text = "Hemos enviado un código de recuperación a tu correo electrónico.",
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center
                 )
+                
+                // Mostrar código solo en modo test (para debugging)
+                state.recoveryCode?.let { code ->
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Código (solo testing): $code",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
+                }
+                
                 Spacer(modifier = Modifier.height(32.dp))
                 Button(
-                    onClick = { navController.popBackStack() },
+                    onClick = { 
+                        viewModel.resetState()
+                        navController.popBackStack() 
+                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Volver al Inicio de Sesión")
@@ -77,7 +94,7 @@ fun PasswordRecoveryScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Ingresa tu correo electrónico y te enviaremos instrucciones para restablecer tu contraseña.",
+                    text = "Ingresa tu correo electrónico y te enviaremos un código para restablecer tu contraseña.",
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center
                 )
@@ -89,6 +106,8 @@ fun PasswordRecoveryScreen(
                     label = { Text("Correo Electrónico") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                    enabled = !state.isLoading,
+                    isError = state.errorMsg != null,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = AmarilloAji,
                         unfocusedBorderColor = AmarilloAji,
@@ -102,21 +121,41 @@ fun PasswordRecoveryScreen(
                     )
                 )
 
+                // Mostrar error si existe
+                state.errorMsg?.let { error ->
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = error,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
-                    onClick = { showSuccess = true },
+                    onClick = { 
+                        viewModel.solicitarRecuperacion(email)
+                    },
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = email.isNotBlank()
+                    enabled = email.isNotBlank() && !state.isLoading
                 ) {
-                    Text("Enviar Instrucciones")
+                    if (state.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = Color.White
+                        )
+                    } else {
+                        Text("Enviar Código")
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 TextButton(
                     onClick = { navController.popBackStack() },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !state.isLoading
                 ) {
                     Text("Cancelar")
                 }
@@ -124,4 +163,3 @@ fun PasswordRecoveryScreen(
         }
     }
 }
-

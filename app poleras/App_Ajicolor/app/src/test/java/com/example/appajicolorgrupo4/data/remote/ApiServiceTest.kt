@@ -158,7 +158,9 @@ class ApiServiceTest {
         val registerRequest = RegisterRequest(
             nombre = "Test",
             email = "existing@example.com",
-            password = "password"
+            password = "password",
+            telefono = "123456789",
+            direccion = "Calle Test 123"
         )
 
         // When
@@ -212,7 +214,7 @@ class ApiServiceTest {
         assertNotNull(response.body())
         assertEquals(2, response.body()?.size)
         assertEquals("Polera Test", response.body()?.get(0)?.nombre)
-        assertEquals(15000.0, response.body()?.get(0)?.precio, 0.01)
+        assertEquals(15000, response.body()?.get(0)?.precio)
     }
 
     @Test
@@ -295,7 +297,7 @@ fun `testGetPosts returns list of posts`() = runTest {
     assertTrue(response.isSuccessful)
     assertNotNull(response.body())
     assertEquals(1, response.body()?.size)
-    assertEquals("Post Test", response.body()?.first()?.titulo)
+    assertEquals("Post Test", response.body()?.first()?.title)
 }
 
 @Test
