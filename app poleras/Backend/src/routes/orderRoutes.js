@@ -2,11 +2,27 @@ const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
 
-// Middleware simple para proteger rutas (se puede mejorar)
+const jwt = require('jsonwebtoken');
+
+// Middleware para proteger rutas
 const protect = async (req, res, next) => {
-    // Implementar validación de JWT aquí si es necesario
-    // Por ahora, permitimos acceso para simplificar, pero en producción debe validarse el token
-    next();
+    let token;
+
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        try {
+            token = req.headers.authorization.split(' ')[1];
+            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+            req.user = decoded; // Agregar usuario decodificado a la request
+            next();
+        } catch (error) {
+            console.error(error);
+            res.status(401).json({ message: 'Not authorized, token failed' });
+        }
+    }
+
+    if (!token) {
+        res.status(401).json({ message: 'Not authorized, no token' });
+    }
 };
 
 // @desc    Crear nuevo pedido
@@ -63,6 +79,18 @@ router.get('/:id', protect, async (req, res) => {
         } else {
             res.status(404).json({ message: 'Pedido no encontrado' });
         }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// @desc    Obtener pedidos por usuario
+// @route   GET /api/v1/pedidos/usuario/:userId
+// @access  Private
+router.get('/usuario/:userId', protect, async (req, res) => {
+    try {
+        const orders = await Order.find({ usuario: req.params.userId }).sort({ createdAt: -1 });
+        res.json(orders);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

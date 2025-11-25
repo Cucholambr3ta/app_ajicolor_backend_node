@@ -46,7 +46,7 @@ class PedidoRepository(private val pedidoDao: PedidoDao) {
                         numeroPedido = pedido.numeroPedido,
                         productoId = producto.id,
                         productoNombre = producto.nombre,
-                        productoImagenResId = producto.imagenResId,
+                        productoImagenResId = producto.imagenResId ?: 0,
                         precio = producto.precio,
                         cantidad = producto.cantidad,
                         talla = producto.talla?.displayName ?: "N/A",

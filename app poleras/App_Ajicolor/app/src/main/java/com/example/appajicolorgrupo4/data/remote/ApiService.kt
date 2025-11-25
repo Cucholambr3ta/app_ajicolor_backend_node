@@ -3,6 +3,8 @@ package com.example.appajicolorgrupo4.data.remote
 import com.example.appajicolorgrupo4.data.local.user.UserEntity
 import com.example.appajicolorgrupo4.data.models.Post
 import com.example.appajicolorgrupo4.data.models.Product
+
+
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -47,7 +49,8 @@ interface ApiService {
      * GET /api/v1/productos/{id}
      */
     @GET("api/v1/productos/{id}")
-    suspend fun getProductoById(@Path("id") id: Long): Response<Product>
+suspend fun getProductoById(@Path("id") id: String): Response<Product>
+
     
     // ==================== POSTS (Para admin) ====================
     
@@ -70,6 +73,20 @@ interface ApiService {
      */
     @GET("api/v1/posts/{id}")
     suspend fun getPostById(@Path("id") postId: Int): Response<Post>
+
+// ==================== PEDIDOS ====================
+
+/** Crea un nuevo pedido POST /api/v1/pedidos */
+@POST("api/v1/pedidos")
+suspend fun createOrder(
+        @Body order: com.example.appajicolorgrupo4.data.models.Order
+): Response<com.example.appajicolorgrupo4.data.models.Order>
+
+/** Obtiene los pedidos de un usuario GET /api/v1/pedidos/usuario/{userId} */
+@GET("api/v1/pedidos/usuario/{userId}")
+suspend fun getOrdersByUser(
+        @Path("userId") userId: String
+): Response<List<com.example.appajicolorgrupo4.data.models.Order>>
 
 }
 

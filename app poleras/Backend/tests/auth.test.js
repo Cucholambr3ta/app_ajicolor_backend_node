@@ -1,15 +1,26 @@
 const request = require('supertest');
-const app = require('../src/index');
+const { MongoMemoryServer } = require('mongodb-memory-server');
 const mongoose = require('mongoose');
+
+// Mock connectDB BEFORE importing index.js
+jest.mock('../src/config/db', () => jest.fn());
+
+const app = require('../src/index');
 const User = require('../src/models/User');
+
+let mongoServer;
 
 describe('Auth API', () => {
     beforeAll(async () => {
-        // Limpiar usuarios de prueba si es necesario
+        mongoServer = await MongoMemoryServer.create();
+        const uri = mongoServer.getUri();
+        await mongoose.connect(uri);
+        process.env.JWT_SECRET = 'testsecret';
     });
 
     afterAll(async () => {
-        await mongoose.connection.close();
+        await mongoose.disconnect();
+        await mongoServer.stop();
     });
 
     it('POST /api/v1/usuarios/register - debería registrar un usuario', async () => {

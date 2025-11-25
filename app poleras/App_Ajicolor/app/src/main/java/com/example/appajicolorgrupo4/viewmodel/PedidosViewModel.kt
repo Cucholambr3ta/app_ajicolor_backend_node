@@ -3,27 +3,27 @@ package com.example.appajicolorgrupo4.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.appajicolorgrupo4.data.EstadoPedido
-import com.example.appajicolorgrupo4.data.PedidoCompleto
-import com.example.appajicolorgrupo4.data.local.database.AppDatabase
-import com.example.appajicolorgrupo4.data.repository.PedidoRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import com.example.appajicolorgrupo4.data.EstadoPedido
+import com.example.appajicolorgrupo4.data.PedidoCompleto
+import com.example.appajicolorgrupo4.data.remote.RetrofitInstance
+import com.example.appajicolorgrupo4.data.repository.RemotePedidoRepository
 
 /**
  * ViewModel para gestionar los pedidos del usuario
- * Ahora con integración a SQLite
+ * Ahora con integración al Backend
  */
 class PedidosViewModel(application: Application) : AndroidViewModel(application) {
 
-    // Repositorio para acceder a la base de datos
-    private val pedidoRepository: PedidoRepository
+    // Repositorio para acceder al backend
+    private val pedidoRepository: RemotePedidoRepository
 
     init {
-        val database = AppDatabase.getInstance(application)
-        pedidoRepository = PedidoRepository(database.pedidoDao())
+        // Inicializamos el repositorio remoto con la instancia de API
+        pedidoRepository = RemotePedidoRepository(RetrofitInstance.api)
     }
 
     private val _pedidos = MutableStateFlow<List<PedidoCompleto>>(emptyList())
@@ -33,10 +33,11 @@ class PedidosViewModel(application: Application) : AndroidViewModel(application)
     val ultimoPedidoGuardado: StateFlow<String?> = _ultimoPedidoGuardado.asStateFlow()
 
     /**
-     * Agrega un nuevo pedido y lo guarda en SQLite. Es una función de suspensión para que la UI pueda esperar.
+     * Agrega un nuevo pedido y lo guarda en el Backend.
      */
     suspend fun agregarPedido(pedido: PedidoCompleto, userId: Long): Result<String> {
-        val resultado = pedidoRepository.guardarPedido(pedido, userId)
+        // Convertimos userId a String para el backend
+        val resultado = pedidoRepository.guardarPedido(pedido, userId.toString())
         resultado.onSuccess { numeroPedido ->
             // Actualizar lista en memoria en el hilo principal
             viewModelScope.launch {
@@ -52,11 +53,12 @@ class PedidosViewModel(application: Application) : AndroidViewModel(application)
     }
 
     /**
-     * Carga los pedidos de un usuario desde SQLite
+     * Carga los pedidos de un usuario desde el Backend
      */
     fun cargarPedidosUsuario(userId: Long) {
         viewModelScope.launch {
-            pedidoRepository.obtenerPedidosUsuario(userId).collect { pedidos ->
+            // Convertimos userId a String
+            pedidoRepository.obtenerPedidosUsuario(userId.toString()).collect { pedidos ->
                 _pedidos.value = pedidos
             }
         }
@@ -88,7 +90,7 @@ class PedidosViewModel(application: Application) : AndroidViewModel(application)
             pedidoRepository.actualizarEstadoPedido(numeroPedido, nuevoEstado)
 
             // Actualizar en memoria
-            _pedidos.value = _pedidos.value.map { pedido ->
+            _pedidos.value = _pedidos.value.map { pedido: PedidoCompleto ->
                 if (pedido.numeroPedido == numeroPedido) {
                     pedido.copy(estado = nuevoEstado)
                 } else {
@@ -107,7 +109,7 @@ class PedidosViewModel(application: Application) : AndroidViewModel(application)
             pedidoRepository.asignarNumeroDespacho(numeroPedido, numeroDespacho)
 
             // Actualizar en memoria
-            _pedidos.value = _pedidos.value.map { pedido ->
+            _pedidos.value = _pedidos.value.map { pedido: PedidoCompleto ->
                 if (pedido.numeroPedido == numeroPedido) {
                     pedido.copy(numeroDespacho = numeroDespacho)
                 } else {
@@ -121,14 +123,14 @@ class PedidosViewModel(application: Application) : AndroidViewModel(application)
      * Obtiene todos los pedidos ordenados por fecha (más reciente primero)
      */
     fun obtenerPedidosOrdenados(): List<PedidoCompleto> {
-        return _pedidos.value.sortedByDescending { it.fechaCreacion }
+        return _pedidos.value.sortedByDescending { pedido: PedidoCompleto -> pedido.fechaCreacion }
     }
 
     /**
      * Obtiene pedidos por estado
      */
-    fun obtenerPedidosPorEstado(estado: EstadoPedido): List<PedidoCompleto> {
-        return _pedidos.value.filter { it.estado == estado }
+    fun obtenerPedidosPorEstado(estadoFiltrar: EstadoPedido): List<PedidoCompleto> {
+        return _pedidos.value.filter { pedido: PedidoCompleto -> pedido.estado == estadoFiltrar }
     }
 
     /**

@@ -11,7 +11,8 @@ data class ProductoCarrito(
     val talla: Talla?,
     val color: ColorInfo,
     val categoria: CategoriaProducto,
-    val imagenResId: Int
+val imagenResId: Int?
+
 ) {
     /**
      * Calcula el subtotal de este item (precio * cantidad)

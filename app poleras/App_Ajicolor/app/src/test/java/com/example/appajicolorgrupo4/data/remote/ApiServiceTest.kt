@@ -239,12 +239,14 @@ class ApiServiceTest {
         )
 
         // When
-        val response = apiService.getProductoById(1L)
+val response = apiService.getProductoById("1")
+
 
         // Then
         assertTrue(response.isSuccessful)
         assertNotNull(response.body())
-        assertEquals(1L, response.body()?.id)
+assertEquals("1", response.body()?.id)
+
         assertEquals("Polera Test", response.body()?.nombre)
     }
 
@@ -257,10 +259,134 @@ class ApiServiceTest {
         )
 
         // When
-        val response = apiService.getProductoById(999L)
+val response = apiService.getProductoById("999")
+
 
         // Then
         assertFalse(response.isSuccessful)
         assertEquals(404, response.code())
     }
+@Test
+fun `testGetPosts returns list of posts`() = runTest {
+    // Given
+    val responseJson =
+            """
+            [
+                {
+                    "_id": "101",
+                    "titulo": "Post Test",
+                    "contenido": "Contenido Test",
+                    "fechaCreacion": "2023-01-01T00:00:00.000Z"
+                }
+            ]
+        """.trimIndent()
+
+    mockWebServer.enqueue(
+            MockResponse()
+                    .setResponseCode(200)
+                    .setBody(responseJson)
+                    .addHeader("Content-Type", "application/json")
+    )
+
+    // When
+    val response = apiService.getPosts()
+
+    // Then
+    assertTrue(response.isSuccessful)
+    assertNotNull(response.body())
+    assertEquals(1, response.body()?.size)
+    assertEquals("Post Test", response.body()?.first()?.titulo)
+}
+
+@Test
+fun `testCreateOrder returns created order`() = runTest {
+    // Given
+    val responseJson =
+            """
+            {
+                "_id": "order123",
+                "numeroPedido": "ORD-001",
+                "usuario": "user123",
+                "productos": [],
+                "subtotal": 1000,
+                "impuestos": 0,
+                "costoEnvio": 0,
+                "total": 1000,
+                "direccionEnvio": "Test Address",
+                "telefono": "123456789",
+                "metodoPago": "EFECTIVO",
+                "estado": "CONFIRMADO"
+            }
+        """.trimIndent()
+
+    mockWebServer.enqueue(
+            MockResponse()
+                    .setResponseCode(201)
+                    .setBody(responseJson)
+                    .addHeader("Content-Type", "application/json")
+    )
+
+    val order =
+            com.example.appajicolorgrupo4.data.models.Order(
+                    numeroPedido = "ORD-001",
+                    usuario = "user123",
+                    productos = emptyList(),
+                    subtotal = 1000,
+                    impuestos = 0,
+                    costoEnvio = 0,
+                    total = 1000,
+                    direccionEnvio = "Test Address",
+                    telefono = "123456789",
+                    metodoPago = "EFECTIVO"
+            )
+
+    // When
+    val response = apiService.createOrder(order)
+
+    // Then
+    assertTrue(response.isSuccessful)
+    assertNotNull(response.body())
+    assertEquals("ORD-001", response.body()?.numeroPedido)
+}
+
+@Test
+fun `testGetOrdersByUser returns list of orders`() = runTest {
+    // Given
+    val responseJson =
+            """
+            [
+                {
+                    "_id": "order123",
+                    "numeroPedido": "ORD-001",
+                    "usuario": "user123",
+                    "productos": [],
+                    "subtotal": 1000,
+                    "impuestos": 0,
+                    "costoEnvio": 0,
+                    "total": 1000,
+                    "direccionEnvio": "Test Address",
+                    "telefono": "123456789",
+                    "metodoPago": "EFECTIVO",
+                    "estado": "CONFIRMADO"
+                }
+            ]
+        """.trimIndent()
+
+    mockWebServer.enqueue(
+            MockResponse()
+                    .setResponseCode(200)
+                    .setBody(responseJson)
+                    .addHeader("Content-Type", "application/json")
+    )
+
+    // When
+    val response = apiService.getOrdersByUser("user123")
+
+    // Then
+    assertTrue(response.isSuccessful)
+    assertNotNull(response.body())
+    assertEquals(1, response.body()?.size)
+    assertEquals("ORD-001", response.body()?.first()?.numeroPedido)
+}
+
 }

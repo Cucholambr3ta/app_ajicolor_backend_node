@@ -1,17 +1,25 @@
 const request = require('supertest');
-const app = require('../src/index');
+const { MongoMemoryServer } = require('mongodb-memory-server');
 const mongoose = require('mongoose');
+
+// Mock connectDB BEFORE importing index.js
+jest.mock('../src/config/db', () => jest.fn());
+
+const app = require('../src/index');
 const Product = require('../src/models/Product');
+
+let mongoServer;
 
 describe('Product API', () => {
     beforeAll(async () => {
-        // Conectar a una base de datos de prueba o mockear
-        // Para simplificar este ejemplo, asumimos que la conexión en index.js maneja el entorno de test
-        // O idealmente usar mongodb-memory-server
+        mongoServer = await MongoMemoryServer.create();
+        const uri = mongoServer.getUri();
+        await mongoose.connect(uri);
     });
 
     afterAll(async () => {
-        await mongoose.connection.close();
+        await mongoose.disconnect();
+        await mongoServer.stop();
     });
 
     it('GET /api/v1/productos - debería retornar lista de productos', async () => {

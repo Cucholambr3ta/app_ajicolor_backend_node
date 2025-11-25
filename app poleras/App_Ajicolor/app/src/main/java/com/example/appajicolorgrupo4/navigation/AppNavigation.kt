@@ -20,6 +20,8 @@ fun AppNavigation() {
     val productoViewModel: ProductoViewModel = viewModel()
     val pedidosViewModel: PedidosViewModel = viewModel()
     val notificacionesViewModel: NotificacionesViewModel = viewModel()
+val postViewModel: PostViewModel = viewModel()
+
 
     // Observar eventos de navegación del MainViewModel
     LaunchedEffect(key1 = true) {
@@ -60,13 +62,14 @@ fun AppNavigation() {
         composable(Screen.Home.route) {
             HomeScreen(
                 navController = navController,
-                productoViewModel = productoViewModel,
-                carritoViewModel = carritoViewModel,
+                viewModel = mainViewModel,
                 usuarioViewModel = usuarioViewModel
             )
         }
-        composable(Screen.Profile.route) { ProfileScreen(navController, usuarioViewModel) }
-        composable(Screen.Settings.route) { SettingScreen(navController) }
+composable(Screen.Profile.route) { ProfileScreen(navController, mainViewModel, usuarioViewModel) }
+
+composable(Screen.Settings.route) { SettingScreen(navController, mainViewModel) }
+
         composable(Screen.Notification.route) { NotificationScreen(navController, notificacionesViewModel) }
 
         // Comercio
@@ -105,7 +108,8 @@ fun AppNavigation() {
             )
         }
 
-        composable(Screen.Catalogo.route) { CatalogoProductosScreen(navController, productoViewModel) }
+composable(Screen.Catalogo.route) { CatalogoProductosScreen(navController) }
+
 
         // Pedidos
         composable(Screen.OrderHistory.route) { OrderHistoryScreen(navController) }
@@ -114,7 +118,8 @@ fun AppNavigation() {
         composable(Screen.Debug.route) { DebugScreen(navController, usuarioViewModel) }
 
         // Admin
-        composable(Screen.Posts.route) { PostScreen(navController) }
+composable(Screen.Posts.route) { PostScreen(postViewModel) }
+
 
         // Arguments
         composable(

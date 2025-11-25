@@ -8,6 +8,7 @@ const connectDB = require('./config/db');
 const productRoutes = require('./routes/productRoutes');
 const authRoutes = require('./routes/authRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const postRoutes = require('./routes/postRoutes');
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use(express.json());
 app.use('/api/v1/productos', productRoutes);
 app.use('/api/v1/usuarios', authRoutes);
 app.use('/api/v1/pedidos', orderRoutes);
+app.use('/api/v1/posts', postRoutes);
 
 // Ruta base
 app.get('/', (req, res) => {
@@ -33,8 +35,10 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en puerto ${PORT}`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Servidor corriendo en puerto ${PORT}`);
+    });
+}
 
 module.exports = app; // Para tests

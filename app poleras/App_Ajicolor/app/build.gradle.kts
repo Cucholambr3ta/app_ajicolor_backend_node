@@ -22,6 +22,8 @@ android {
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
+        
+        buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:3000/\"")
     }
 
     buildTypes {
@@ -42,6 +44,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -56,6 +59,7 @@ dependencies {
     // Retrofit y Gson Converter
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     // Corrutinas para trabajo asincronico
     // Corrutinas para trabajo asincronico
