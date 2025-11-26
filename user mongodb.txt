@@ -1,2 +1,0 @@
-usuario: ajicolor_db_user
-password: 87B0YUQozV3d8UlY
