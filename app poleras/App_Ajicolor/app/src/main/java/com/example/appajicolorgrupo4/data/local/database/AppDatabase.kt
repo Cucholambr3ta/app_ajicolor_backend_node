@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch                                // Lanzar corrut
 // version = 2: Agregadas las tablas de pedidos y pedido_items
 @Database(
     entities = [UserEntity::class, PedidoEntity::class, PedidoItemEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = true // Mantener true para inspección de esquema (útil en educación)
 )
 abstract class AppDatabase : RoomDatabase() {

@@ -23,7 +23,7 @@ android {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
         
-        buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:3000/\"")
+        buildConfigField("String", "BASE_URL", "\"https://app-poleras-backend.vercel.app/\"")
     }
 
     buildTypes {

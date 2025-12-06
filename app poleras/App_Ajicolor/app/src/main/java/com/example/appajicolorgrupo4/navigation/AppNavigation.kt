@@ -18,7 +18,7 @@ fun AppNavigation() {
     val usuarioViewModel: UsuarioViewModel = viewModel()
     val carritoViewModel: CarritoViewModel = viewModel()
     val productoViewModel: ProductoViewModel = viewModel()
-    val pedidosViewModel: PedidosViewModel = viewModel()
+    val pedidosViewModel: PedidosViewModel = pedidosViewModel()
     val notificacionesViewModel: NotificacionesViewModel = viewModel()
     // PostViewModel removed as it is no longer used in PostScreen (Admin)
 
